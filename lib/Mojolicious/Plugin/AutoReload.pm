@@ -1,5 +1,5 @@
 package Mojolicious::Plugin::AutoReload;
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 # ABSTRACT: Automatically reload open browser windows when your application changes
 
 =head1 SYNOPSIS
