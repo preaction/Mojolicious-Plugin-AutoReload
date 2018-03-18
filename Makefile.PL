@@ -2,21 +2,23 @@
 use strict;
 use warnings;
 
-use 5.008;
+use 5.010;
 
 use ExtUtils::MakeMaker;
 
 my %WriteMakefileArgs = (
-  "ABSTRACT" => "Write a sentence about what it does",
+  "ABSTRACT" => "Automatically reload open browser windows when your application changes",
   "AUTHOR" => "Doug Bell <preaction\@cpan.org>",
   "CONFIGURE_REQUIRES" => {
     "ExtUtils::MakeMaker" => 0
   },
-  "DISTNAME" => "Mojolicious-Plugin-AutoRefresh",
+  "DISTNAME" => "Mojolicious-Plugin-AutoReload",
   "LICENSE" => "perl",
-  "MIN_PERL_VERSION" => "5.008",
-  "NAME" => "Mojolicious::Plugin::AutoRefresh",
-  "PREREQ_PM" => {},
+  "MIN_PERL_VERSION" => "5.010",
+  "NAME" => "Mojolicious::Plugin::AutoReload",
+  "PREREQ_PM" => {
+    "Mojolicious" => 7
+  },
   "TEST_REQUIRES" => {
     "ExtUtils::MakeMaker" => 0,
     "File::Spec" => 0,
@@ -36,6 +38,7 @@ my %FallbackPrereqs = (
   "File::Spec" => 0,
   "IO::Handle" => 0,
   "IPC::Open3" => 0,
+  "Mojolicious" => 7,
   "Test::More" => 0
 );
 

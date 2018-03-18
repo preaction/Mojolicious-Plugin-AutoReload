@@ -1,3 +1,5 @@
 Changelog for Mojolicious-Plugin-AutoReload
 
 {{ $NEXT }}
+
+    Initial Release

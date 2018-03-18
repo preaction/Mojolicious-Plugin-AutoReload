@@ -1,6 +1,9 @@
+[![Build Status](https://travis-ci.org/preaction/Mojolicious-Plugin-AutoReload.svg?branch=master)](https://travis-ci.org/preaction/Mojolicious-Plugin-AutoReload)
+[![Coverage Status](https://coveralls.io/repos/preaction/Mojolicious-Plugin-AutoReload/badge.svg?branch=master)](https://coveralls.io/r/preaction/Mojolicious-Plugin-AutoReload?branch=master)
+
 # NAME
 
-Mojolicious::Plugin::AutoRefresh - Write a sentence about what it does
+Mojolicious::Plugin::AutoReload - Automatically reload open browser windows when your application changes
 
 # VERSION
 
@@ -8,9 +11,52 @@ version 0.001
 
 # SYNOPSIS
 
+    use Mojolicious::Lite;
+    plugin AutoReload => {};
+    get '/' => 'index';
+    app->start;
+
+    __DATA__
+    @@ layouts/default.html.ep
+    %= auto_reload;
+    %= content;
+
+    @@ index.html.ep
+    % layout 'default';
+    Hello world!
+
 # DESCRIPTION
 
+This plugin automatically reloades the page when the Mojolicious webapp
+restarts.  This is especially useful when using [the Morbo development
+server](http://mojolicious.org/perldoc/Mojolicious/Guides/Tutorial#Reloading),
+which automatically restarts the webapp when it detects changes.
+Combined, `morbo` and `Mojolicious::Plugin::AutoReload` will
+automatically display your new content whenever you change your webapp
+in your editor!
+
+This works by opening a WebSocket connection to a specific Mojolicious
+route. When the server restarts, the WebSocket is disconnected, which
+triggers a reload of the page.
+
+# HELPERS
+
+## auto\_reload
+
+The `auto_reload` template helper inserts the JavaScript to
+automatically reload the page. This helper only works when the
+application mode is `development`, so you can leave this in all the
+time and have it only appear during local development.
+
+# ROUTES
+
+## /auto\_reload
+
+This plugin adds a `/auto_reload` WebSocket route to your application.
+
 # SEE ALSO
+
+[Mojolicious](https://metacpan.org/pod/Mojolicious)
 
 # AUTHOR
 

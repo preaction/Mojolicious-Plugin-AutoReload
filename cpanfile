@@ -1,4 +1,5 @@
-requires "perl" => "5.008";
+requires "Mojolicious" => "7";
+requires "perl" => "5.010";
 
 on 'test' => sub {
   requires "ExtUtils::MakeMaker" => "0";
