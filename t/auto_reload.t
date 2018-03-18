@@ -18,14 +18,14 @@ $t->app->plugin( 'AutoReload' );
 $t->get_ok( '/' )
     ->status_is( 200 )
     ->content_like( qr{$VALUE} )
-    ->content_like( qr{location\.reload\(\)}, 'development mode contains script with reload' )
+    ->content_like( qr{location\.reload}, 'development mode contains script with reload' )
     ;
 
 $t->app->mode( 'production' );
 $t->get_ok( '/' )
     ->status_is( 200 )
     ->content_like( qr{$VALUE} )
-    ->content_unlike( qr{location\.reload\(\)}, 'non-development mode lacks reload' )
+    ->content_unlike( qr{location\.reload}, 'non-development mode lacks reload' )
     ;
 
 done_testing;
