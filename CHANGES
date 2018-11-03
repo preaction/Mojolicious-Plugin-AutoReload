@@ -2,6 +2,8 @@ Changelog for Mojolicious-Plugin-AutoReload
 
 {{ $NEXT }}
 
+0.002     2018-11-03 15:39:50-05:00 America/Chicago
+
     [Fixed]
 
     - Increased inactivity timeout to reduce spurious log messages and
