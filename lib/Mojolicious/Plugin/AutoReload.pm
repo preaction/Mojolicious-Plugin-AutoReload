@@ -83,7 +83,7 @@ sub register {
                     } );
                     // Send pings to ensure that the connection stays up, or we learn
                     // of the connection's death
-                    setInterval( function () { autoReloadWs.send( "ping" ) }, 5000 );
+                    setInterval( function () { autoReloadWs.send( "ping" ) }, 30000 );
                 </script>
 ENDHTML
         }
