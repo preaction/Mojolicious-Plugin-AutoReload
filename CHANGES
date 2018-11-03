@@ -2,6 +2,13 @@ Changelog for Mojolicious-Plugin-AutoReload
 
 {{ $NEXT }}
 
+    [Fixed]
+
+    - Increased inactivity timeout to reduce spurious log messages and
+      reconnections
+    - Wait one second before reloading to give the server some time to
+      restart
+
 0.001     2018-03-18 15:49:51-05:00 America/Chicago
 
     Initial Release
