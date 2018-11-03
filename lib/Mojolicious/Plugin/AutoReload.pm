@@ -62,6 +62,7 @@ sub register {
 
     $app->routes->websocket( '/auto_reload' => sub {
         my ( $c ) = @_;
+        $c->inactivity_timeout( 60 );
         my $timer_id = Mojo::IOLoop->timer( 30, sub { $c->send( 'ping' ) } );
         $c->on( finish => sub {
             Mojo::IOLoop->remove( $timer_id );
