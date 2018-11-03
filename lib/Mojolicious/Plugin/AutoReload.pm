@@ -78,7 +78,8 @@ sub register {
                     // be restarting, and we should reload the page
                     var autoReloadWs = new WebSocket( "ws://" + location.host + "<%== url_for( 'auto_reload' ) %>" );
                     autoReloadWs.addEventListener( "close", function (event) {
-                        location.reload(true); // force a reload from the server
+                        // Wait one second then force a reload from the server
+                        setTimeout( function () { location.reload(true); }, 1000 );
                     } );
                     // Send pings to ensure that the connection stays up, or we learn
                     // of the connection's death
