@@ -2,6 +2,8 @@ Changelog for Mojolicious-Plugin-AutoReload
 
 {{ $NEXT }}
 
+0.003     2018-11-03 16:32:28-05:00 America/Chicago
+
     [Fixed]
 
     - Fixed server ping only happening once, causing more inactivity
