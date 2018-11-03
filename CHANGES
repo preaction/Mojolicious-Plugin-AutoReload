@@ -2,6 +2,13 @@ Changelog for Mojolicious-Plugin-AutoReload
 
 {{ $NEXT }}
 
+    [Fixed]
+
+    - Fixed server ping only happening once, causing more inactivity
+      timeouts
+    - Increased interval between client pings, since they aren't being
+      actually used for anything except keeping the connection alive
+
 0.002     2018-11-03 15:39:50-05:00 America/Chicago
 
     [Fixed]
