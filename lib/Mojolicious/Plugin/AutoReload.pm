@@ -31,6 +31,17 @@ your HTML pages while running in C<development> mode. If you need to
 control where this script tag is written, use the L</auto_reload>
 helper.
 
+To disable the plugin for a single page, set the C<<
+plugin.auto_reload.disable >> stash value to a true value:
+
+
+    get '/' => sub {
+        my ( $c ) = @_;
+        # Don't auto-reload the home page
+        $c->stash( 'plugin.auto_reload.disable' => 1 );
+        ...
+    };
+
 =head1 HELPERS
 
 =head2 auto_reload
@@ -74,9 +85,8 @@ sub register {
 
         $app->hook(after_render => sub {
             my ( $c, $output, $format ) = @_;
-            return if $c->stash( 'plugin.auto_reload.added' );
+            return if $c->stash( 'plugin.auto_reload.disable' );
             if ( $format eq 'html' ) {
-                $c->stash( 'plugin.auto_reload.added' => 1 );
                 my $dom = Mojo::DOM->new( $$output );
                 my $body = $dom->at( 'body' ) || $dom;
                 $body->append_content( $c->auto_reload );
@@ -87,8 +97,8 @@ sub register {
 
     $app->helper( auto_reload => sub {
         my ( $c ) = @_;
-        if ( $app->mode eq 'development' ) {
-            $c->stash( 'plugin.auto_reload.added' => 1 );
+        if ( $app->mode eq 'development' && !$c->stash( 'plugin.auto_reload.disable' ) ) {
+            $c->stash( 'plugin.auto_reload.disable' => 1 );
             return $c->render_to_string( inline => unindent trim( <<'ENDHTML' ) );
                 <script>
                     // If we lose our websocket connection, the web server must
