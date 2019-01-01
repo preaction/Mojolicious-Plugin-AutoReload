@@ -2,6 +2,11 @@ Changelog for Mojolicious-Plugin-AutoReload
 
 {{ $NEXT }}
 
+    [Added]
+
+    - Added hook to automatically add auto-reload script to the page.
+      Now the only thing a user has to do to use this plugin is add it.
+
 0.003     2018-11-03 16:32:28-05:00 America/Chicago
 
     [Fixed]

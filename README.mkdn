@@ -7,7 +7,7 @@ Mojolicious::Plugin::AutoReload - Automatically reload open browser windows when
 
 # VERSION
 
-version 0.003
+version 0.004
 
 # SYNOPSIS
 
@@ -15,14 +15,8 @@ version 0.003
     plugin AutoReload => {};
     get '/' => 'index';
     app->start;
-
     __DATA__
-    @@ layouts/default.html.ep
-    %= auto_reload;
-    %= content;
-
     @@ index.html.ep
-    % layout 'default';
     Hello world!
 
 # DESCRIPTION
@@ -39,6 +33,20 @@ This works by opening a WebSocket connection to a specific Mojolicious
 route. When the server restarts, the WebSocket is disconnected, which
 triggers a reload of the page.
 
+The AutoReload plugin will automatically add a `<script>` tag to
+your HTML pages while running in `development` mode. If you need to
+control where this script tag is written, use the ["auto\_reload"](#auto_reload)
+helper.
+
+To disable the plugin for a single page, set the `plugin.auto_reload.disable` stash value to a true value:
+
+    get '/' => sub {
+        my ( $c ) = @_;
+        # Don't auto-reload the home page
+        $c->stash( 'plugin.auto_reload.disable' => 1 );
+        ...
+    };
+
 # HELPERS
 
 ## auto\_reload
@@ -47,6 +55,9 @@ The `auto_reload` template helper inserts the JavaScript to
 automatically reload the page. This helper only works when the
 application mode is `development`, so you can leave this in all the
 time and have it only appear during local development.
+
+This is only needed if you want to control where the `<script>`
+for automatically-reloading is rendered.
 
 # ROUTES
 
