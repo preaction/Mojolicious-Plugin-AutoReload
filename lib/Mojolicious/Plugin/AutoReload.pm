@@ -107,11 +107,12 @@ sub register {
         my ( $c ) = @_;
         if ( $app->mode eq 'development' && !$c->stash( 'plugin.auto_reload.disable' ) ) {
             $c->stash( 'plugin.auto_reload.disable' => 1 );
-            return $c->render_to_string( inline => unindent trim( <<'ENDHTML' ) );
+            my $auto_reload_end_point = $c->url_for( 'auto_reload' );
+            return $c->render_to_string( inline => unindent trim( <<"ENDHTML" ) );
                 <script>
                     // If we lose our websocket connection, the web server must
                     // be restarting, and we should reload the page
-                    var autoReloadWs = new WebSocket( "ws://" + location.host + "<%== url_for( 'auto_reload' ) %>" );
+                    var autoReloadWs = new WebSocket( "ws://" + location.host + "$auto_reload_end_point" );
                     autoReloadWs.addEventListener( "close", function (event) {
                         // Wait one second then force a reload from the server
                         setTimeout( function () { location.reload(true); }, 1000 );
