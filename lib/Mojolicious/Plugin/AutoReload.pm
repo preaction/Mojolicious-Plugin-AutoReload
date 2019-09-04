@@ -108,7 +108,7 @@ sub register {
         if ( $app->mode eq 'development' && !$c->stash( 'plugin.auto_reload.disable' ) ) {
             $c->stash( 'plugin.auto_reload.disable' => 1 );
             my $auto_reload_end_point = $c->url_for( 'auto_reload' );
-            return $c->render_to_string( inline => unindent trim( <<"ENDHTML" ) );
+            return unindent trim( <<"ENDHTML" );
                 <script>
                     // If we lose our websocket connection, the web server must
                     // be restarting, and we should reload the page
