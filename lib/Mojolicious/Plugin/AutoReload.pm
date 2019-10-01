@@ -112,7 +112,11 @@ sub register {
                 <script>
                     // If we lose our websocket connection, the web server must
                     // be restarting, and we should reload the page
-                    var autoReloadWs = new WebSocket( "ws://" + location.host + "$auto_reload_end_point" );
+                    var proto = "ws";
+                    if ( document.location.protocol === "https:" ) {
+                        proto = "wss";
+                    }
+                    var autoReloadWs = new WebSocket( proto + "://" + location.host + "$auto_reload_end_point" );
                     autoReloadWs.addEventListener( "close", function (event) {
                         // Wait one second then force a reload from the server
                         setTimeout( function () { location.reload(true); }, 1000 );
