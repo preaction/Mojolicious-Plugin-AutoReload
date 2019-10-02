@@ -2,6 +2,11 @@ Changelog for Mojolicious-Plugin-AutoReload
 
 {{ $NEXT }}
 
+    [Fixed]
+
+    - Fixed the WebSocket connect URL when viewing the site through
+      HTTPS. Thanks @RobertDeRose! [Github #3]
+
 0.006     2019-09-04 18:21:21-05:00 America/Chicago
 
     [Fixed]

@@ -7,7 +7,7 @@ Mojolicious::Plugin::AutoReload - Automatically reload open browser windows when
 
 # VERSION
 
-version 0.006
+version 0.007
 
 # SYNOPSIS
 
@@ -73,9 +73,10 @@ This plugin adds a `/auto_reload` WebSocket route to your application.
 
 Doug Bell <preaction@cpan.org>
 
-# CONTRIBUTOR
+# CONTRIBUTORS
 
-Zeeshan Muhammad <zeeshan@dkhr.com>
+- Robert DeRose <RobertDeRose@users.noreply.github.com>
+- Zeeshan Muhammad <zeeshan@dkhr.com>
 
 # COPYRIGHT AND LICENSE
 
