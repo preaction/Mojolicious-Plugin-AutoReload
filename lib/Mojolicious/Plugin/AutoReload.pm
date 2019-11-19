@@ -76,6 +76,9 @@ sub register {
     if ( $app->mode eq 'development' ) {
         $app->routes->get( '/auto_reload' => sub {
             my ( $c ) = @_;
+            if ( $c->param( 'restart' ) ) {
+                return $c->rendered( 204 );
+            }
             if ( $ENV{PLACK_ENV} ) {
                 # Blocking long-polling
                 $c->inactivity_timeout( 300 );
@@ -120,9 +123,51 @@ sub register {
             my $auto_reload_end_point = $c->url_for( 'auto_reload' );
             my $mechanism = $ENV{PLACK_ENV} ? 'poll' : 'websocket';
             return unindent trim( <<"ENDHTML" );
+                <style>
+                @-webkit-keyframes auto-reload-spinner-border {
+                    to {
+                        -webkit-transform: rotate(360deg);
+                        transform: rotate(360deg);
+                    }
+                }
+                \@keyframes auto-reload-spinner-border {
+                    to {
+                        -webkit-transform: rotate(360deg);
+                        transform: rotate(360deg);
+                    }
+                }
+
+                .auto-reload-alert {
+                    position: fixed;
+                    top: 1.5em;
+                    right: 1.5em;
+                    background: rgba( 255, 255, 255, 128 );
+                    padding: 1.25rem 1.75rem;
+                    border-radius: .25rem;
+                    border: 2px solid grey;
+                }
+
+                .auto-reload-spinner {
+                    display: inline-block;
+                    width: 2em;
+                    height: 2em;
+                    vertical-align: middle;
+                    border: .25em solid black;
+                    border-right-color: transparent;
+                    border-radius: 50%;
+                    margin: .25em;
+                    animation: auto-reload-spinner-border .75s linear infinite;
+                }
+
+                .auto-reload-text {
+                    vertical-align: middle;
+                }
+
+                </style>
                 <script>
                     var autoReloadUrl = "$auto_reload_end_point";
                     var mechanism = "$mechanism";
+                    var restartTries = 1;
 
                     function openWebsocket() {
                         // If we lose our websocket connection, the web server must
@@ -142,7 +187,7 @@ sub register {
                                 runPoller();
                                 return;
                             }
-                            autoReload();
+                            waitForRestart();
                         } );
                         // Send pings to ensure that the connection stays up, or we learn
                         // of the connection's death
@@ -152,24 +197,57 @@ sub register {
                     // If opening a websocket doesn't work, try long polling!
                     function runPoller() {
                         var request = new XMLHttpRequest();
+                        request.timeout = 300000;
                         request.open('GET', autoReloadUrl, true);
-
-                        request.onload = function() {
-                            if (this.status == 204) {
-                                runPoller();
-                            }
-                            else {
-                                autoReload();
+                        request.onreadystatechange = function () {
+                            if (request.readyState == XMLHttpRequest.DONE ) {
+                                if ( request.status == 204 /* NO CONTENT */ ) {
+                                    runPoller();
+                                }
+                                else {
+                                    waitForRestart();
+                                }
                             }
                         };
-
-                        request.onerror = autoReload;
                         request.send();
                     }
 
                     function autoReload() {
                         // Wait a few seconds then force a reload from the server
-                        setTimeout( function () { location.reload(true); }, 5000 );
+                        setTimeout( function () { location.reload(true); }, 1000 );
+                    }
+
+                    function waitForRestart() {
+                        var alert = document.createElement( 'div' );
+                        alert.className = 'auto-reload-alert';
+                        // Spinner from Bootstrap
+                        var spinner = document.createElement( 'div' );
+                        spinner.className = 'auto-reload-spinner';
+                        alert.appendChild( spinner );
+
+                        var textSpan = document.createElement( 'span' );
+                        textSpan.className = 'auto-reload-text';
+                        textSpan.appendChild( document.createTextNode( 'Restarting... ' + restartTries ) );
+                        alert.appendChild( textSpan );
+                        document.body.appendChild( alert );
+
+                        var tryRequest = function () {
+                            textSpan.removeChild( textSpan.lastChild );
+                            textSpan.appendChild( document.createTextNode( 'Restarting... ' + ++restartTries ) );
+
+                            var request = new XMLHttpRequest();
+                            request.timeout = 500;
+                            request.open('GET', autoReloadUrl + '?restart=1', true);
+                            request.onreadystatechange = function () {
+                                if (request.readyState == XMLHttpRequest.DONE ) {
+                                    if ( request.status == 204 /* NO CONTENT */ ) {
+                                        autoReload();
+                                    }
+                                }
+                            };
+                            request.send();
+                        };
+                        setInterval( tryRequest, 1000 );
                     }
 
                     if ( mechanism == 'websocket' ) {
