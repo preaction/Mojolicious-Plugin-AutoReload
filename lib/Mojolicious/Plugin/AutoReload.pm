@@ -74,13 +74,23 @@ sub register {
     my ( $self, $app, $config ) = @_;
 
     if ( $app->mode eq 'development' ) {
-        $app->routes->websocket( '/auto_reload' => sub {
+        $app->routes->get( '/auto_reload' => sub {
             my ( $c ) = @_;
-            $c->inactivity_timeout( 60 );
-            my $timer_id = Mojo::IOLoop->recurring( 30, sub { $c->send( 'ping' ) } );
-            $c->on( finish => sub {
-                Mojo::IOLoop->remove( $timer_id );
-            } );
+            if ( $ENV{PLACK_ENV} ) {
+                # Blocking long-polling
+                $c->inactivity_timeout( 300 );
+                $c->render_later;
+                sleep 240;
+                $c->rendered( 204 );
+                return;
+            }
+            else {
+                $c->inactivity_timeout( 60 );
+                my $timer_id = Mojo::IOLoop->recurring( 30, sub { $c->send( 'ping' ) } );
+                $c->on( finish => sub {
+                    Mojo::IOLoop->remove( $timer_id );
+                } );
+            }
         } )->name( 'auto_reload' );
 
         $app->hook(after_render => sub {
@@ -108,22 +118,66 @@ sub register {
         if ( $app->mode eq 'development' && !$c->stash( 'plugin.auto_reload.disable' ) ) {
             $c->stash( 'plugin.auto_reload.disable' => 1 );
             my $auto_reload_end_point = $c->url_for( 'auto_reload' );
+            my $mechanism = $ENV{PLACK_ENV} ? 'poll' : 'websocket';
             return unindent trim( <<"ENDHTML" );
                 <script>
-                    // If we lose our websocket connection, the web server must
-                    // be restarting, and we should reload the page
-                    var proto = "ws";
-                    if ( document.location.protocol === "https:" ) {
-                        proto = "wss";
+                    var autoReloadUrl = "$auto_reload_end_point";
+                    var mechanism = "$mechanism";
+
+                    function openWebsocket() {
+                        // If we lose our websocket connection, the web server must
+                        // be restarting, and we should reload the page
+                        var opened = false;
+                        var proto = "ws";
+                        if ( document.location.protocol === "https:" ) {
+                            proto = "wss";
+                        }
+                        var autoReloadWs = new WebSocket( proto + "://" + location.host + autoReloadUrl );
+                        autoReloadWs.addEventListener( "open", function (event) {
+                            opened = true;
+                        } );
+                        autoReloadWs.addEventListener( "close", function (event) {
+                            if ( !opened ) {
+                                // This server doesn't support websockets, so try long-polling
+                                runPoller();
+                                return;
+                            }
+                            autoReload();
+                        } );
+                        // Send pings to ensure that the connection stays up, or we learn
+                        // of the connection's death
+                        setInterval( function () { autoReloadWs.send( "ping" ) }, 30000 );
                     }
-                    var autoReloadWs = new WebSocket( proto + "://" + location.host + "$auto_reload_end_point" );
-                    autoReloadWs.addEventListener( "close", function (event) {
-                        // Wait one second then force a reload from the server
-                        setTimeout( function () { location.reload(true); }, 1000 );
-                    } );
-                    // Send pings to ensure that the connection stays up, or we learn
-                    // of the connection's death
-                    setInterval( function () { autoReloadWs.send( "ping" ) }, 30000 );
+
+                    // If opening a websocket doesn't work, try long polling!
+                    function runPoller() {
+                        var request = new XMLHttpRequest();
+                        request.open('GET', autoReloadUrl, true);
+
+                        request.onload = function() {
+                            if (this.status == 204) {
+                                runPoller();
+                            }
+                            else {
+                                autoReload();
+                            }
+                        };
+
+                        request.onerror = autoReload;
+                        request.send();
+                    }
+
+                    function autoReload() {
+                        // Wait a few seconds then force a reload from the server
+                        setTimeout( function () { location.reload(true); }, 5000 );
+                    }
+
+                    if ( mechanism == 'websocket' ) {
+                        openWebsocket();
+                    }
+                    else {
+                        runPoller();
+                    }
                 </script>
 ENDHTML
         }
