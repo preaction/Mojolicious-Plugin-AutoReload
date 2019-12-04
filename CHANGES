@@ -2,6 +2,8 @@ Changelog for Mojolicious-Plugin-AutoReload
 
 {{ $NEXT }}
 
+0.008     2019-12-03 20:20:58-06:00 America/Chicago
+
     [Added]
 
     - Added a long-polling option so that this plugin works without
