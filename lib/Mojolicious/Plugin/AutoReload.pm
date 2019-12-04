@@ -64,6 +64,11 @@ This plugin adds a C</auto_reload> WebSocket route to your application.
 
 L<Mojolicious>
 
+=head1 THANKS
+
+Thanks to L<Grant Street Group|https://grantstreet.com> for funding
+continued development of this plugin!
+
 =cut
 
 use Mojo::Base 'Mojolicious::Plugin';
