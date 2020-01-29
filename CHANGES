@@ -2,6 +2,16 @@ Changelog for Mojolicious-Plugin-AutoReload
 
 {{ $NEXT }}
 
+    [Added]
+
+    - Added Reload and Cancel buttons to override the auto-detection
+      while waiting for the server to restart.
+
+    [Fixed]
+
+    - Rewrote the poller to not tie up workers for minutes, resulting in
+      the server not responding after navigating around a bit.
+
 0.008     2019-12-03 20:20:58-06:00 America/Chicago
 
     [Added]
