@@ -2,6 +2,8 @@ Changelog for Mojolicious-Plugin-AutoReload
 
 {{ $NEXT }}
 
+0.009     2020-01-28 23:45:05-06:00 America/Chicago
+
     [Added]
 
     - Added Reload and Cancel buttons to override the auto-detection
