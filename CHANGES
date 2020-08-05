@@ -2,6 +2,10 @@ Changelog for Mojolicious-Plugin-AutoReload
 
 {{ $NEXT }}
 
+    [Fixed]
+
+    - Fixed the websocket URL lacking a leading slash
+
 0.009     2020-01-28 23:45:05-06:00 America/Chicago
 
     [Added]
