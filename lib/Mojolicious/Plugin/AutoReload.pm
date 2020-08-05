@@ -137,7 +137,7 @@ sub register {
         my ( $c ) = @_;
         if ( $app->mode eq 'development' && !$c->stash( 'plugin.auto_reload.disable' ) ) {
             $c->stash( 'plugin.auto_reload.disable' => 1 );
-            my $auto_reload_end_point = $c->url_for( 'auto_reload' );
+            my $auto_reload_end_point = $c->url_for( 'auto_reload' )->path->leading_slash(1);
             my $mechanism = $ENV{PLACK_ENV} ? 'poll' : 'websocket';
             return unindent trim( <<"ENDHTML" );
                 <style>
